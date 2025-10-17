@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "src/app/app-ads.txt/route.ts": {
+      "maxDuration": 10
+    },
+    "src/app/policies/route.ts": {
+      "maxDuration": 10
+    }
+  }
+}
