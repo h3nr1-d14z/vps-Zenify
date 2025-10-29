@@ -66,10 +66,11 @@ function normalizeAppAds(raw: string): string {
 
         if (fields.length === 0) continue;
 
-        // Expected format: domain, publisher id, DIRECT|RESELLER (some sheets might omit or include extra columns)
+        // Expected format: domain, publisher id, DIRECT|RESELLER, certification_authority_id (optional 4th field)
         let domain = fields[0] || '';
         let pubId = fields[1] || '';
         let rel = (fields[2] || '').toUpperCase();
+        let certAuthId = fields[3] || ''; // Optional 4th field
 
         // If the line was a single CSV cell that contains commas (e.g. the whole row wrapped in quotes),
         // attempt to split by commas inside that value as fallback
@@ -79,6 +80,7 @@ function normalizeAppAds(raw: string): string {
                 domain = parts[0];
                 pubId = parts[1];
                 rel = (parts[2] || rel).toUpperCase();
+                certAuthId = parts[3] || '';
             }
         }
 
@@ -92,11 +94,17 @@ function normalizeAppAds(raw: string): string {
             else rel = 'DIRECT';
         }
 
-        // Final sanitize: remove internal whitespace from domain, publisher id
+        // Final sanitize: remove internal whitespace from domain, publisher id, and cert auth id
         domain = domain.trim();
         pubId = pubId.trim();
+        certAuthId = certAuthId.trim();
 
-        out.push(`${domain}, ${pubId}, ${rel}`);
+        // Include the 4th field if present
+        if (certAuthId) {
+            out.push(`${domain}, ${pubId}, ${rel}, ${certAuthId}`);
+        } else {
+            out.push(`${domain}, ${pubId}, ${rel}`);
+        }
     }
 
     return out.join('\n');
